@@ -13,8 +13,8 @@ class Program
     // algorithm settings, feel free to mess with it
     const bool AVERAGE = false;
     static int NUMCOLORS = 32;
-    const int WIDTH = 512;
-    const int HEIGHT = 512;
+    const int WIDTH = 256;
+    const int HEIGHT = 128;
     static int STARTX = 128;
     static int STARTY = 64;
 
@@ -150,6 +150,11 @@ class Program
         // calculate the checkpoints in advance
         var checkpoints = Enumerable.Range(1, 10).ToDictionary(i => i * colors.Count / 10 - 1, i => i - 1);
 
+        // Stopwatch just for diagnostics
+        var times = new List<double>();
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+
         // loop through all colors that we want to place
         for (var i = 0; i < colors.Count; i++)
         {
@@ -191,7 +196,15 @@ class Program
             int chkidx;
             if (checkpoints.TryGetValue(i, out chkidx))
             {
-                Console.WriteLine("checkpoint");
+                // Time it
+                stopwatch.Stop();
+                var ts = stopwatch.Elapsed;
+                times.Add(ts.TotalMilliseconds);
+		string elapsedTime = String.Format("checkpoint {0}.{1:00}s",
+		    ts.Seconds, ts.Milliseconds);
+		Console.WriteLine("RunTime " + elapsedTime);
+
+		// Save it
                 var img = new Bitmap(WIDTH, HEIGHT, PixelFormat.Format24bppRgb);
                 for (var y = 0; y < HEIGHT; y++)
                 {
@@ -201,9 +214,14 @@ class Program
                     }
                 }
                 img.Save("result" + chkidx + ".png");
+
+                stopwatch.Restart();
             }
         }
 
+	Console.WriteLine(String.Format("Average time {0:00} millis", times.Average()));
+
         Trace.Assert(available.Count == 0);
     }
+
 }
