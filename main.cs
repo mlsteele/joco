@@ -91,7 +91,7 @@ class Program
         // double phi = Math.Atan2(xy.y - STARTY, xy.x -STARTY);
         // return Convert.ToInt32(v);
         int x = coldiff(imgref.GetPixel(xy.x, xy.y), c);
-        return x;
+        return x * 1;
     }
     
     static int calcdiff(Color[,] pixels, Bitmap imgref, XY xy, Color c)
