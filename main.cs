@@ -87,10 +87,15 @@ class Program
 
     static int calcdiff2(Bitmap imgref, XY xy, Color c)
     {
+        // geometric bias
         // double phi = Math.Atan2(xy.y, xy.x);
-        // double phi = Math.Atan2(xy.y - STARTY, xy.x -STARTY);
-        int x = coldiff(imgref.GetPixel(xy.x, xy.y), c);
-        double v = x * 0.1;
+        double phi = Math.Atan2(xy.y - STARTY, xy.x -STARTY);
+        double v = phi * 1000;
+
+        // similarity to reference image
+        // int x = coldiff(imgref.GetPixel(xy.x, xy.y), c);
+        // double v = x * 0.1;
+
         return Convert.ToInt32(v);
     }
     
@@ -122,7 +127,7 @@ class Program
         Console.WriteLine("STARTY {0}", STARTY);
 
 
-        var imgref = new Bitmap("./lena-512x512.png");
+        var imgref = new Bitmap("./refimg/lena-512x512.png");
 
         // create every color once and randomize the order
         var colors = new List<Color>();
