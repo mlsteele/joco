@@ -12,11 +12,11 @@ class Program
 {
     // algorithm settings, feel free to mess with it
     const bool AVERAGE = false;
-    const int NUMCOLORS = 32;
+    static int NUMCOLORS = 32;
     const int WIDTH = 256;
     const int HEIGHT = 128;
-    const int STARTX = 128;
-    const int STARTY = 64;
+    static int STARTX = 128;
+    static int STARTY = 64;
 
     // represent a coordinate
     struct XY
@@ -66,7 +66,8 @@ class Program
     }
 
     // calculates how well a color fits at the given coordinates
-    static int calcdiff(Color[,] pixels, XY xy, Color c)
+    // by similarity
+    static int calcdiff1(Color[,] pixels, XY xy, Color c)
     {
         // get the diffs for each neighbor separately
         var diffs = new List<int>(8);
@@ -84,8 +85,41 @@ class Program
             return diffs.Min();
     }
 
+    static int calcdiff2(Color[,] pixels, XY xy, Color c)
+    {
+        // double phi = Math.Atan2(xy.y, xy.x);
+        double phi = Math.Atan2(xy.y - STARTY, xy.x -STARTY);
+        double v = phi * 10000;
+        return Convert.ToInt32(v);
+    }
+    
+    static int calcdiff(Color[,] pixels, XY xy, Color c)
+    {
+        return calcdiff1(pixels, xy, c) + calcdiff2(pixels, xy, c);
+    }
+
     static void Main(string[] args)
     {
+        // set params
+        int NUMPIXELS = WIDTH * HEIGHT;
+        NUMCOLORS = 0;
+        for (var guess = 1; guess < 10000; guess++) {
+            int g2 = guess * guess * guess;
+            if (g2 == NUMPIXELS) {
+                NUMCOLORS = guess;
+            }
+        }
+        Trace.Assert(NUMCOLORS > 0);
+        STARTX = WIDTH / 2;
+        STARTY = HEIGHT / 2;
+
+        // print settings
+        Console.WriteLine("NUMCOLORS {0}", NUMCOLORS);
+        Console.WriteLine("WIDTH {0}", WIDTH);
+        Console.WriteLine("HEIGHT {0}", HEIGHT);
+        Console.WriteLine("STARTX {0}", STARTX);
+        Console.WriteLine("STARTY {0}", STARTY);
+
         // create every color once and randomize the order
         var colors = new List<Color>();
         for (var r = 0; r < NUMCOLORS; r++)
@@ -94,6 +128,8 @@ class Program
                     colors.Add(Color.FromArgb(r * 255 / (NUMCOLORS - 1), g * 255 / (NUMCOLORS - 1), b * 255 / (NUMCOLORS - 1)));
         var rnd = new Random();
         colors.Sort(new Comparison<Color>((c1, c2) => rnd.Next(3) - 1));
+        // var red = Color.FromArgb(255, 0, 0);
+        // colors = colors.OrderBy((c) => -coldiff(c, red)).ToList();
 
         // temporary place where we work (faster than all that many GetPixel calls)
         var pixels = new Color[HEIGHT, WIDTH];
@@ -146,6 +182,7 @@ class Program
             int chkidx;
             if (checkpoints.TryGetValue(i, out chkidx))
             {
+                Console.WriteLine("checkpoint");
                 var img = new Bitmap(WIDTH, HEIGHT, PixelFormat.Format24bppRgb);
                 for (var y = 0; y < HEIGHT; y++)
                 {
