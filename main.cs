@@ -85,17 +85,18 @@ class Program
             return diffs.Min();
     }
 
-    static int calcdiff2(Color[,] pixels, XY xy, Color c)
+    static int calcdiff2(Bitmap imgref, XY xy, Color c)
     {
         // double phi = Math.Atan2(xy.y, xy.x);
-        double phi = Math.Atan2(xy.y - STARTY, xy.x -STARTY);
-        double v = phi * 10000;
-        return Convert.ToInt32(v);
+        // double phi = Math.Atan2(xy.y - STARTY, xy.x -STARTY);
+        // return Convert.ToInt32(v);
+        int x = coldiff(imgref.GetPixel(xy.x, xy.y), c);
+        return x;
     }
     
-    static int calcdiff(Color[,] pixels, XY xy, Color c)
+    static int calcdiff(Color[,] pixels, Bitmap imgref, XY xy, Color c)
     {
-        return calcdiff1(pixels, xy, c) + calcdiff2(pixels, xy, c);
+        return calcdiff1(pixels, xy, c) + calcdiff2(imgref, xy, c);
     }
 
     static void Main(string[] args)
@@ -119,6 +120,9 @@ class Program
         Console.WriteLine("HEIGHT {0}", HEIGHT);
         Console.WriteLine("STARTX {0}", STARTX);
         Console.WriteLine("STARTY {0}", STARTY);
+
+
+        var imgref = new Bitmap("./lena-256x128.png");
 
         // create every color once and randomize the order
         var colors = new List<Color>();
@@ -156,11 +160,11 @@ class Program
             else
             {
                 bestxy = available.First();
-                int bestdiff = calcdiff(pixels, bestxy, colors[i]);
+                int bestdiff = calcdiff(pixels, imgref, bestxy, colors[i]);
 
                 // find the best place from the list of available coordinates
                 foreach (var xy in available) {
-                    int diff = calcdiff(pixels, xy, colors[i]);
+                    int diff = calcdiff(pixels, imgref, xy, colors[i]);
                     if (diff < bestdiff) {
                             bestdiff = diff;
                             bestxy = xy;
