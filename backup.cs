@@ -1,3 +1,4 @@
+#define TRACE
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,6 +99,10 @@ class Program
         // temporary place where we work (faster than all that many GetPixel calls)
         var pixels = new Color[HEIGHT, WIDTH];
         Trace.Assert(pixels.Length == colors.Count);
+	if (pixels.Length != colors.Count) {
+	    Console.WriteLine("{0} != {1}", pixels.Length, colors.Count);
+	    throw new System.ArgumentException("pixel count does not match color count");
+	}
 
         // constantly changing list of available coordinates (empty pixels which have non-empty neighbors)
         var available = new HashSet<XY>();
@@ -108,6 +113,8 @@ class Program
         // loop through all colors that we want to place
         for (var i = 0; i < colors.Count; i++)
         {
+	    // Console.WriteLine("major iteration {0}", i);
+
             if (i % 256 == 0)
                 Console.WriteLine("{0:P}, queue size {1}", (double)i / WIDTH / HEIGHT, available.Count);
 
@@ -119,17 +126,12 @@ class Program
             }
             else
             {
-                bestxy = available.First();
-                int bestdiff = calcdiff(pixels, bestxy, colors[i]);
-
                 // find the best place from the list of available coordinates
-                foreach (var xy in available) {
-                    int diff = calcdiff(pixels, xy, colors[i]);
-                    if (diff < bestdiff) {
-                            bestdiff = diff;
-                            bestxy = xy;
-                    }
-                }
+                // uses parallel processing, this is the most expensive step
+                bestxy = available
+		    .Where((xy,j) => (j + xy.GetHashCode() % 10000 == 0) || (j == 0))
+		    .AsParallel()
+		    .OrderBy(xy => calcdiff(pixels, xy, colors[i])).First();
             }
 
             // put the pixel where it belongs
