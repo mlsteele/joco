@@ -85,12 +85,12 @@ class Program
             return diffs.Min();
     }
 
-    static int calcdiff2(Bitmap imgref, XY xy, Color c)
+    static int calcdiff2(int frame, Bitmap imgref, XY xy, Color c)
     {
         // geometric bias
         // double phi = Math.Atan2(xy.y, xy.x);
-        double phi = Math.Atan2(xy.y - STARTY, xy.x -STARTY);
-        double v = phi * 1000;
+        double phi = Math.Atan2(xy.y - STARTY, xy.x - STARTX);
+        double v = Math.Abs(phi - frame / (WIDTH * HEIGHT) * 3) * 1000;
 
         // similarity to reference image
         // int x = coldiff(imgref.GetPixel(xy.x, xy.y), c);
@@ -99,9 +99,9 @@ class Program
         return Convert.ToInt32(v);
     }
     
-    static int calcdiff(Color[,] pixels, Bitmap imgref, XY xy, Color c)
+    static int calcdiff(int frame, Color[,] pixels, Bitmap imgref, XY xy, Color c)
     {
-        return calcdiff1(pixels, xy, c) + calcdiff2(imgref, xy, c);
+        return calcdiff1(pixels, xy, c) + calcdiff2(frame, imgref, xy, c);
     }
 
     static void Main(string[] args)
@@ -165,11 +165,11 @@ class Program
             else
             {
                 bestxy = available.First();
-                int bestdiff = calcdiff(pixels, imgref, bestxy, colors[i]);
+                int bestdiff = calcdiff(i, pixels, imgref, bestxy, colors[i]);
 
                 // find the best place from the list of available coordinates
                 foreach (var xy in available) {
-                    int diff = calcdiff(pixels, imgref, xy, colors[i]);
+                    int diff = calcdiff(i, pixels, imgref, xy, colors[i]);
                     if (diff < bestdiff) {
                             bestdiff = diff;
                             bestxy = xy;
