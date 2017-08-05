@@ -5,3 +5,6 @@ all:
 
 lena-256x128.png:
 	convert lena-512x512.tif -resize 256x128! lena-256x128.png
+
+lena-512x512.png:
+	convert lena-512x512.tif -resize 512x512! lena-512x512.png

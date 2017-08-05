@@ -13,8 +13,8 @@ class Program
     // algorithm settings, feel free to mess with it
     const bool AVERAGE = false;
     static int NUMCOLORS = 32;
-    const int WIDTH = 256;
-    const int HEIGHT = 128;
+    const int WIDTH = 512;
+    const int HEIGHT = 512;
     static int STARTX = 128;
     static int STARTY = 64;
 
@@ -89,9 +89,9 @@ class Program
     {
         // double phi = Math.Atan2(xy.y, xy.x);
         // double phi = Math.Atan2(xy.y - STARTY, xy.x -STARTY);
-        // return Convert.ToInt32(v);
         int x = coldiff(imgref.GetPixel(xy.x, xy.y), c);
-        return x * 1;
+        double v = x * 0.1;
+        return Convert.ToInt32(v);
     }
     
     static int calcdiff(Color[,] pixels, Bitmap imgref, XY xy, Color c)
@@ -122,7 +122,7 @@ class Program
         Console.WriteLine("STARTY {0}", STARTY);
 
 
-        var imgref = new Bitmap("./lena-256x128.png");
+        var imgref = new Bitmap("./lena-512x512.png");
 
         // create every color once and randomize the order
         var colors = new List<Color>();
