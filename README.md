@@ -1,7 +1,6 @@
 # Joco
 
-Make pretty pictures. A fork of fejesjoco's cool program.
-https://codegolf.stackexchange.com/questions/22144/images-with-all-colors
+Make pretty pictures. A fork of [fejesjoco's cool program](https://codegolf.stackexchange.com/questions/22144/images-with-all-colors).
 
 ![swirl](https://github.com/mlsteele/joco/blob/master/render/swirl/result9.png)
 
